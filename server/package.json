@@ -1,0 +1,22 @@
+{
+  "name": "neas-boarding-horse-server",
+  "version": "1.0.0",
+  "description": "Backend for Nea's Boarding Horse private community site",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.11.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^18.0.4",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.7.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+

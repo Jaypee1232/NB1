@@ -1,0 +1,185 @@
+/* =========================================================
+   theme.css — loaded after style.css. Delete this file and its
+   <link> in index.html to get the previous look back.
+========================================================= */
+
+:root {
+    --hero: #0e2550;
+    --radius-lg: 14px;
+    --muted: #646b76;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+}
+
+::selection {
+    background: var(--pink-light);
+    color: var(--pink-text);
+}
+
+h1, h2, h3, .page-header h1 {
+    text-wrap: balance;
+}
+
+.top-logo em,
+.small-logo em {
+    color: var(--pink-text);
+}
+
+/* ---------- Welcome: the one bold moment ---------- */
+
+.auth-screen {
+    background: var(--hero);
+}
+
+#welcomePage {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: #fff;
+    padding: 20px 8px;
+}
+
+#welcomePage .logo span {
+    font-size: 52px;
+    line-height: 1.05;
+}
+
+#welcomePage .logo em {
+    font-size: 26px;
+    margin-top: 2px;
+}
+
+#welcomePage .tagline {
+    color: rgba(255, 255, 255, .82);
+    font-size: 17px;
+    margin-bottom: 34px;
+}
+
+#welcomePage .feature-card {
+    padding: 14px 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 0;
+}
+
+#welcomePage .feature-card:last-of-type {
+    border-bottom: 1px solid rgba(255, 255, 255, .16);
+    margin-bottom: 26px;
+}
+
+#welcomePage .feature-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+}
+
+#welcomePage .feature-card p {
+    color: rgba(255, 255, 255, .7);
+}
+
+#welcomePage .primary-btn {
+    background: #fff;
+    color: var(--hero);
+}
+
+#welcomePage .primary-btn:hover {
+    background: var(--pink-light);
+}
+
+#welcomePage :focus-visible {
+    outline-color: #fff;
+}
+
+.auth-card {
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+}
+
+/* ---------- Buttons: solid, no lift ---------- */
+
+.primary-btn {
+    background: var(--navy);
+    border-radius: 12px;
+    transition: background-color .18s ease;
+}
+
+.primary-btn:hover {
+    background: var(--navy-dark);
+    transform: none;
+    box-shadow: none;
+}
+
+.rail-create {
+    background: #c23f6c;
+    box-shadow: none;
+    border-radius: 12px;
+    transition: background-color .18s ease;
+}
+
+.rail-create:hover {
+    background: #a8355c;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Dark mode turns --navy into a light blue, so white text on it
+   was hard to read. Use dark text on the light fill instead. */
+html[data-theme="dark"] .primary-btn,
+html[data-theme="dark"] .feature-icon.navy,
+html[data-theme="dark"] .avatar,
+html[data-theme="dark"] .notification-permission-banner button {
+    color: #0c1220;
+}
+
+html[data-theme="dark"] .rail-create {
+    background: var(--pink);
+    color: #0c1220;
+}
+
+html[data-theme="dark"] .rail-create:hover {
+    background: #f394b1;
+}
+
+html[data-theme="dark"] .auth-screen {
+    background: #070c17;
+}
+
+/* ---------- Feed: flat cards, easier reading ---------- */
+
+.post-card {
+    box-shadow: none;
+    margin-top: 14px;
+}
+
+.post-card:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.topbar {
+    box-shadow: none;
+}
+
+.profile-stats strong {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Mobile "+" button: same solid fill as the desktop New Post button */
+.create-button {
+    background: #c23f6c;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+}
+
+.create-button:hover {
+    background: #a8355c;
+}
+
+html[data-theme="dark"] .create-button {
+    background: var(--pink);
+    color: #0c1220;
+}

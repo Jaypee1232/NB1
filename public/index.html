@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nea's Boarding Horse</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="theme.css">
+  <meta name="description" content="A private community for Nea's Boarding Horse members.">
+  <meta name="theme-color" content="#0e2550">
+  <meta property="og:title" content="Nea's Boarding Horse">
+  <meta property="og:description" content="A private community for members.">
+
+  <!-- PWA: installable app config -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NBH">
+</head>
+<body>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============ AUTHENTICATION ============ -->
+  <div id="authScreen" class="auth-screen">
+
+    <!-- WELCOME -->
+    <div id="welcomePage" class="auth-card">
+      <div class="logo">
+        <span>Nea's</span>
+        <em>Boarding Horse</em>
+      </div>
+
+      <p class="tagline">
+        Your space. Your people.<br>
+        Your moments.
+      </p>
+
+      <div class="feature-card">
+        <div class="feature-icon navy"><span data-icon="lock" class="icon"></span></div>
+        <div>
+          <h3>Private &amp; Secure</h3>
+          <p>Only registered members can see anything on this site.</p>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon pink"><span data-icon="users" class="icon"></span></div>
+        <div>
+          <h3>One Community</h3>
+          <p>Every member is connected from the start — no requests, no waiting.</p>
+        </div>
+      </div>
+
+      <button class="primary-btn" onclick="showLogin()">Log In</button>
+
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginPage" class="auth-card hidden">
+      <button class="back-button" onclick="showWelcome()" aria-label="Back">←</button>
+
+      <div class="small-logo">
+        <span>Nea's</span>
+        <em>Boarding Horse</em>
+      </div>
+
+      <p class="welcome-text">Welcome back! Log in to your private space.</p>
+
+      <form id="loginForm">
+        <div class="input-box">
+          <span data-icon="user" class="icon" aria-hidden="true"></span>
+          <input type="text" id="loginUsername" aria-label="Username" placeholder="Username" autocomplete="username" required>
+        </div>
+
+        <div class="input-box">
+          <span data-icon="lock" class="icon" aria-hidden="true"></span>
+          <input type="password" id="loginPassword" aria-label="Password" placeholder="Password" autocomplete="current-password" required>
+          <button type="button" id="loginPasswordToggle" onclick="togglePassword('loginPassword')" aria-label="Show password"><span data-icon="eye" class="icon"></span></button>
+        </div>
+
+        <p id="loginError" class="field-error hidden" role="alert"></p>
+
+        <button class="primary-btn" type="submit">Log In</button>
+      </form>
+
+      <p class="auth-switch">
+        Accounts are provided by the admin — no public sign-up.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ MAIN APPLICATION ============ -->
+  <div id="app" class="app hidden">
+
+    <header class="topbar">
+      <div class="top-logo">
+        <span>Nea's</span>
+        <em>Boarding Horse</em>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-button" onclick="toggleTheme()" aria-label="Toggle dark mode">
+          <span data-icon="moon" data-theme-icon class="icon"></span>
+        </button>
+        <button onclick="openPage('notifications')" class="icon-button" aria-label="Notifications">
+          <span data-icon="bell" class="icon"></span>
+          <i id="notificationDot"></i>
+        </button>
+        <button onclick="openPage('profile')" id="headerAvatar" class="avatar" aria-label="Profile">N</button>
+      </div>
+    </header>
+
+    <div class="app-body">
+
+      <!-- DESKTOP SIDEBAR NAV -->
+      <aside class="sidebar-left">
+        <nav class="rail-nav">
+          <button class="rail-item active" data-rail="home" onclick="openPage('home')">
+            <span data-icon="home" class="icon"></span><span class="rail-label">Home</span>
+          </button>
+          <button class="rail-item" data-rail="friends" onclick="openPage('friends')">
+            <span data-icon="users" class="icon"></span><span class="rail-label">Members</span>
+          </button>
+          <button class="rail-item" data-rail="notifications" onclick="openPage('notifications')">
+            <span data-icon="bell" class="icon"></span><span class="rail-label">Notifications</span>
+            <i id="notificationDotRail"></i>
+          </button>
+          <button class="rail-item" data-rail="profile" onclick="openPage('profile')">
+            <span data-icon="user" class="icon"></span><span class="rail-label">Profile</span>
+          </button>
+          <button class="rail-item hidden" data-rail="admin" id="adminNavButton" onclick="openPage('admin')">
+            <span data-icon="shield" class="icon"></span><span class="rail-label">Admin</span>
+          </button>
+        </nav>
+
+        <button class="rail-create" onclick="openComposer()">
+          <span data-icon="plus" class="icon"></span><span>New Post</span>
+        </button>
+
+        <button class="rail-item rail-item-ghost" onclick="logout()">
+          <span>Log Out</span>
+        </button>
+      </aside>
+
+      <!-- CENTER COLUMN -->
+      <main class="main-content">
+
+        <!-- HOME -->
+        <section id="homePage" class="page active">
+          <div class="create-mini" onclick="openComposer()">
+            <div class="avatar" id="homeAvatar">N</div>
+            <div class="fake-input">What's on your mind?</div>
+            <span class="fake-input-icon" data-icon="image"></span>
+          </div>
+
+          <div id="feed"></div>
+        </section>
+
+        <!-- FRIENDS / MEMBERS -->
+        <section id="friendsPage" class="page">
+          <div class="page-header">
+            <div>
+              <h1>Members</h1>
+              <p>Everyone at Nea's Boarding Horse</p>
+            </div>
+          </div>
+
+          <div class="search-box">
+            <span data-icon="search" class="icon" aria-hidden="true"></span>
+            <input type="text" id="friendSearchInput" aria-label="Search members" placeholder="Search members..." oninput="filterFriends()">
+          </div>
+
+          <div id="friendsList" class="friends-list"></div>
+        </section>
+
+        <!-- ADMIN PANEL -->
+        <section id="adminPage" class="page">
+          <div class="page-header admin-page-header">
+            <div>
+              <h1>Admin Panel</h1>
+              <p>Manage accounts, permissions, passwords, and community posts.</p>
+            </div>
+            <button class="soft-button" onclick="loadAdminPanel()">Refresh</button>
+          </div>
+
+          <div class="admin-grid">
+            <div class="admin-card admin-create-card">
+              <div class="admin-card-heading">
+                <div>
+                  <h2>Create Account</h2>
+                  <p>Accounts created here can log in immediately.</p>
+                </div>
+              </div>
+              <form id="adminCreateForm" class="admin-form">
+                <label>Full name<input id="adminNewName" type="text" required maxlength="80" placeholder="John Doe"></label>
+                <label>Username<input id="adminNewUsername" type="text" required maxlength="80" placeholder="John@nbh"></label>
+                <label>Password<input id="adminNewPassword" type="password" required minlength="8" placeholder="At least 8 characters"></label>
+                <button class="primary-btn" type="submit">Create Account</button>
+              </form>
+            </div>
+
+            <div class="admin-card admin-stat-card">
+              <span>Total accounts</span>
+              <strong id="adminUserCount">0</strong>
+              <small>Including the admin account</small>
+            </div>
+            <div class="admin-card admin-stat-card">
+              <span>Total posts</span>
+              <strong id="adminPostCount">0</strong>
+              <small>Photos and videos in the community</small>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-heading">
+              <div>
+                <h2>Accounts</h2>
+                <p>Admins can disable accounts, change names, reset passwords, and manage admin access.</p>
+              </div>
+              <input class="admin-search" id="adminUserSearch" type="search" placeholder="Search accounts..." oninput="renderAdminUsers()">
+            </div>
+            <div id="adminUsersList" class="admin-users-list"></div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-heading">
+              <div>
+                <h2>All Posted Media</h2>
+                <p>View photos and videos posted by every account.</p>
+              </div>
+            </div>
+            <div id="adminPostsGrid" class="admin-posts-grid"></div>
+          </div>
+        </section>
+
+        <!-- NOTIFICATIONS -->
+        <section id="notificationsPage" class="page">
+          <div class="page-header">
+            <div>
+              <h1>Notifications</h1>
+              <p>What's happening around you</p>
+            </div>
+            <button class="icon-button" onclick="clearNotifications()" aria-label="Mark all as read">✓</button>
+          </div>
+
+          <div id="notificationsList"></div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="profilePage" class="page">
+          <div class="profile-cover" id="profileCover">
+            <button class="cover-edit-button" id="coverEditButton" onclick="triggerBannerUpload()" aria-label="Change cover photo">
+              <span data-icon="camera" class="icon"></span> Edit cover
+            </button>
+          </div>
+
+          <div class="profile-header">
+            <div class="profile-photo-container">
+              <div id="profileAvatar" class="avatar large">N</div>
+              <button class="camera-button" id="cameraButton" onclick="triggerAvatarUpload()" aria-label="Change profile picture">
+                <span data-icon="camera" class="icon"></span>
+              </button>
+            </div>
+
+            <div class="profile-info">
+              <h1 id="profileName">Nea</h1>
+              <p id="profileUsername">@neaspace</p>
+              <span class="privacy">Community Member</span>
+            </div>
+
+            <div class="profile-actions" id="profileActions">
+              <button class="soft-button" onclick="openEditProfile()">
+                <span data-icon="edit" class="icon"></span> Edit Profile
+              </button>
+              <button class="soft-button" onclick="openChangePassword()">
+                <span data-icon="lock" class="icon"></span> Change Password
+              </button>
+              <button class="soft-button logout-button" onclick="logout()">Log Out</button>
+            </div>
+          </div>
+
+          <div class="profile-stats">
+            <div><strong id="postCount">0</strong><span>Posts</span></div>
+            <div><strong id="friendCount">0</strong><span>Members</span></div>
+            <div><strong id="updateCount">0</strong><span>Saved</span></div>
+            <div><strong id="reactionCount">0</strong><span>Reactions</span></div>
+          </div>
+
+          <p id="profileBio" class="profile-bio"></p>
+
+          <div class="profile-tabs">
+            <button class="active" id="postsTabButton" onclick="switchProfileTab('posts')">Posts</button>
+            <button id="repostsTabButton" onclick="switchProfileTab('reposts')">Reposted</button>
+          </div>
+
+          <div id="profileGrid" class="profile-grid"></div>
+          <div id="repostsGrid" class="profile-grid hidden"></div>
+
+          <div class="albums-header" id="albumsHeader">
+            <h2>Albums</h2>
+            <button class="soft-button" onclick="createAlbum()">+ New Album</button>
+          </div>
+          <div id="albumsGrid" class="albums-grid"></div>
+        </section>
+
+      </main>
+
+      <!-- DESKTOP RIGHT SIDEBAR -->
+      <aside class="sidebar-right">
+        <div class="sidebar-card sidebar-profile" onclick="openPage('profile')">
+          <div class="avatar" id="sidebarAvatar">N</div>
+          <div class="sidebar-profile-info">
+            <strong id="sidebarName">Nea</strong>
+            <small id="sidebarUsername">@neaspace</small>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <h3>Community</h3>
+            <button class="text-link" onclick="openPage('friends')">See all</button>
+          </div>
+          <div id="sidebarMembersList" class="sidebar-members-list"></div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="openPage('home')">
+        <span data-icon="home" class="icon"></span><small>Home</small>
+      </button>
+      <button class="nav-item" onclick="openPage('friends')">
+        <span data-icon="users" class="icon"></span><small>Members</small>
+      </button>
+      <button class="create-button" onclick="openComposer()" aria-label="Create post">
+        <span data-icon="plus" class="icon"></span>
+      </button>
+      <button class="nav-item" onclick="openPage('profile')">
+        <span data-icon="user" class="icon"></span><small>Profile</small>
+      </button>
+      <button class="nav-item hidden" id="adminMobileNav" onclick="openPage('admin')">
+        <span data-icon="shield" class="icon"></span><small>Admin</small>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ============ CREATE POST MODAL ============ -->
+  <div id="composerModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="New post">
+    <div class="modal-box">
+      <div class="modal-header">
+        <button onclick="closeComposer()" aria-label="Close">×</button>
+        <strong>New Post</strong>
+        <button class="post-button" id="publishButton" onclick="publishPost()">Post</button>
+      </div>
+
+      <div class="post-author">
+        <div class="avatar" id="modalAvatar">N</div>
+        <div>
+          <strong id="modalName">You</strong>
+          <span>Community</span>
+        </div>
+      </div>
+
+      <textarea id="postText" aria-label="Post text" placeholder="What's on your mind?"></textarea>
+
+      <div id="imagePreview" class="image-preview hidden"></div>
+
+      <div class="post-tools">
+        <button type="button" onclick="addPhoto()"><span data-icon="image" class="icon"></span><span>Photo</span></button>
+        <button type="button" onclick="addVideo()"><span data-icon="video" class="icon"></span><span>Video</span></button>
+        <button type="button" onclick="addAlbum()"><span data-icon="folder" class="icon"></span><span>Album</span></button>
+        <button type="button" onclick="createPoll()"><span data-icon="poll" class="icon"></span><span>Poll</span></button>
+      </div>
+
+      <div class="post-privacy">
+        Who can see this?
+        <strong>Everyone in the community</strong>
+      </div>
+
+      <input type="file" id="postPhotoInput" accept="image/*" multiple hidden>
+      <input type="file" id="postVideoInput" accept="video/*" hidden>
+    </div>
+  </div>
+
+  <!-- Hidden device pickers: profile picture & cover photo -->
+  <input type="file" id="avatarInput" accept="image/*" hidden>
+  <input type="file" id="bannerInput" accept="image/*" hidden>
+
+  <!-- ============ EDIT PROFILE MODAL ============ -->
+  <div id="editModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Edit profile">
+    <div class="modal-box small">
+      <div class="modal-header">
+        <button onclick="closeModal('editModal')" aria-label="Close">×</button>
+        <strong>Edit Profile</strong>
+        <button class="post-button" onclick="saveProfile()">Save</button>
+      </div>
+
+      <label>
+        Name
+        <input id="editName" type="text">
+      </label>
+
+      <label>
+        Bio
+        <textarea id="editBio"></textarea>
+      </label>
+    </div>
+  </div>
+
+  <!-- ============ CHANGE PASSWORD MODAL ============ -->
+  <div id="changePasswordModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Change password">
+    <div class="modal-box small">
+      <div class="modal-header">
+        <button type="button" onclick="closeChangePassword()" aria-label="Close">×</button>
+        <strong>Change Password</strong>
+        <span></span>
+      </div>
+
+      <p id="changePasswordError" class="field-error hidden" role="alert"></p>
+
+      <form id="changePasswordForm">
+        <label>
+          Current Password
+          <input type="password" id="currentPassword" autocomplete="current-password">
+        </label>
+        <label>
+          New Password
+          <input type="password" id="newPassword" autocomplete="new-password">
+        </label>
+        <label>
+          Confirm New Password
+          <input type="password" id="confirmNewPassword" autocomplete="new-password">
+        </label>
+
+        <button class="primary-btn" type="submit">Save Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ ALBUM MODAL ============ -->
+  <div id="albumModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Album">
+    <div class="modal-box small">
+      <div class="modal-header">
+        <button onclick="closeModal('albumModal')" aria-label="Close">×</button>
+        <strong id="albumModalTitle">Album</strong>
+        <button class="post-button" onclick="addPhotoToAlbum()">+ Add</button>
+      </div>
+
+      <div id="albumModalGrid" class="album-modal-grid"></div>
+      <input type="file" id="albumPhotoInput" accept="image/*" multiple hidden>
+    </div>
+  </div>
+
+  <!-- ============ POST OPTIONS MODAL (delete, etc.) ============ -->
+  <div id="postMenuModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Post options">
+    <div class="modal-box small">
+      <div class="modal-header">
+        <button onclick="closeModal('postMenuModal')" aria-label="Close">×</button>
+        <strong>Post Options</strong>
+        <span></span>
+      </div>
+      <div id="postMenuOptions" class="post-menu-options"></div>
+    </div>
+  </div>
+
+  <!-- ============ COMMENTS MODAL ============ -->
+  <div id="commentsModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Comments">
+    <div class="modal-box">
+      <div class="modal-header">
+        <button onclick="closeModal('commentsModal')" aria-label="Close">×</button>
+        <strong>Comments</strong>
+        <span></span>
+      </div>
+
+      <div id="commentsList" class="comments-list"></div>
+
+      <form id="commentForm" class="comment-form">
+        <input type="text" id="commentInput" aria-label="Comment" placeholder="Add a comment..." autocomplete="off" required>
+        <button type="submit">Post</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ POST VIEW MODAL (lightbox, opened from profile grid) ============ -->
+  <div id="postViewModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Post">
+    <div class="modal-box post-view-box">
+      <div class="modal-header">
+        <button onclick="closeModal('postViewModal')" aria-label="Close">×</button>
+        <strong>Post</strong>
+        <span></span>
+      </div>
+      <div id="postViewContent"></div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW OTHER USER'S PROFILE MODAL ============ -->
+  <div id="userProfileModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Member profile">
+    <div class="modal-box post-view-box">
+      <div class="modal-header">
+        <button onclick="closeModal('userProfileModal')" aria-label="Close">×</button>
+        <strong>Profile</strong>
+        <span></span>
+      </div>
+      <div id="userProfileContent"></div>
+    </div>
+  </div>
+
+
+  <!-- ============ PROMPT / CONFIRM MODAL (replaces native alert/prompt/confirm) ============ -->
+  <div id="promptModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Confirm">
+    <div class="modal-box small">
+      <div class="modal-header">
+        <span></span>
+        <strong id="promptModalTitle">Please confirm</strong>
+        <span></span>
+      </div>
+      <p id="promptModalMessage" class="prompt-modal-message"></p>
+      <label id="promptModalInputWrap" class="hidden">
+        <input type="text" id="promptModalInput" autocomplete="off">
+      </label>
+      <div class="prompt-modal-actions">
+        <button type="button" class="soft-button" id="promptModalCancel">Cancel</button>
+        <button type="button" class="primary-btn" id="promptModalOk">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+ 
+</body>
+</html>
