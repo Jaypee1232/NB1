@@ -427,7 +427,7 @@ app.post("/api/upload", requireAuth, async (req, res) => {
   const match = /^data:([a-z]+\/[a-z0-9.+-]+);base64,([A-Za-z0-9+/=]+)$/i.exec(dataUrl);
   if (!match) return res.status(400).json({ error: "Invalid file data." });
   const mime = match[1].toLowerCase();
-  const allowedImages = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
+  const allowedImages = new Set(["image/png", "image/jpeg", "image/gif", "image/webp", "image/heic", "image/heif"]);
   const allowedVideos = new Set(["video/mp4", "video/webm", "video/quicktime"]);
   const isVideo = kind === "video";
   const allowed = isVideo ? allowedVideos.has(mime) : allowedImages.has(mime);
@@ -440,7 +440,7 @@ app.post("/api/upload", requireAuth, async (req, res) => {
 
   if (!CLOUDINARY_CONFIGURED) {
     // Local fallback: keep the file on this server's disk (safe types only, random name).
-    const EXT = { "image/png": "png", "image/jpeg": "jpg", "image/gif": "gif", "image/webp": "webp", "video/mp4": "mp4", "video/webm": "webm", "video/quicktime": "mov" };
+    const EXT = { "image/png": "png", "image/jpeg": "jpg", "image/gif": "gif", "image/webp": "webp", "image/heic": "heic",  "image/heif": "heif", "video/mp4": "mp4", "video/webm": "webm", "video/quicktime": "mov" };
     const m = match;
     if (!m || !EXT[m[1]]) {
       return res.status(400).json({ error: "That file type isn't supported." });
