@@ -606,7 +606,7 @@ function sanitizeOwnSocial(incoming) {
       text: clampString(n.text, 300),
       time: clampString(n.time, 100),
       unread: !!n.unread,
-      postId: typeof n.postId === "number" ? n.postId : undefined
+      postId: typeof n.postId === "number" ? n.postId : null
     })),
     albums: albums.filter(isPlainObject).slice(0, 100).map(a => ({
       id: clampString(a.id, 100) || ("album_" + crypto.randomBytes(6).toString("hex")),
