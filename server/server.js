@@ -331,6 +331,24 @@ function loginLimiter(req, res, next) {
   next();
 }
 
+function removeUndefined(value) {
+  if (Array.isArray(value)) {
+    return value.map(removeUndefined);
+  }
+
+  if (isPlainObject(value)) {
+    const cleaned = {};
+    for (const [key, item] of Object.entries(value)) {
+      if (item !== undefined) {
+        cleaned[key] = removeUndefined(item);
+      }
+    }
+    return cleaned;
+  }
+
+  return value;
+}
+
 app.post("/api/auth/login", loginLimiter, ah(async (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) {
