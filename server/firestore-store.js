@@ -84,7 +84,7 @@ async function writeStateIfRevision(obj, expectedRev) {
     const current = snap.exists ? snap.data() : { rev: 0 };
     const currentRev = Number(current.rev) || 0;
     if (currentRev !== Number(expectedRev)) return false;
-    const next = { ...obj, rev: currentRev + 1 };
+    const next = removeUndefined({ ...obj, rev: currentRev + 1 });
     tx.set(database, next);
     return true;
   });
