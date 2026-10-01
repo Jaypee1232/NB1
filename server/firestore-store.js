@@ -53,6 +53,7 @@ function init() {
   const app = admin.initializeApp({ credential });
   const databaseId = process.env.FIRESTORE_DATABASE_ID; // undefined -> the (default) database
   db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
+  db.settings({ ignoreUndefinedProperties: true }); 
   return db;
 }
 
