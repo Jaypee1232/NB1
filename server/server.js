@@ -463,11 +463,11 @@ app.post("/api/upload", requireAuth, async (req, res) => {
     });
     res.json({ url: result.secure_url });
   } catch (error) {
-    console.error("[cloudinary upload error]", error {
+    console.error("[cloudinary upload error]",{
        message: error?.message,
-       https_code: error?.http_code,
+       http_code: error?.http_code,
        name: error?.name,
-       response: error?.response?.body || error?.response?.date || null
+       response: error?.response?.body || error?.response?.data || null
     }); 
     res.status(502).json({ error: "Upload to media storage failed. Please try again." });
   }
