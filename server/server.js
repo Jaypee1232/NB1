@@ -893,12 +893,12 @@ app.post("/api/state", requireAuth, ah(async (req, res) => {
     });
   }
 
-  const finalState = {
-    users: finalUsers,
+  const finalState = removeUndefined({
+     users: finalUsers,
     posts: finalPosts,
     social: finalSocial,
     rev: currentRev
-  };
+  });
 
   const saved = await store.writeStateIfRevision(finalState, currentRev);
   if (!saved) {
