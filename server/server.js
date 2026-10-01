@@ -1,3 +1,4 @@
+console.log("BUILD 2026-10-02-b store-removeUndefined");
 /* =========================================================
    NEA'S BOARDING HORSE — BACKEND SERVER
    Express + Firestore + Cloudinary.
