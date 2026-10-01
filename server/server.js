@@ -799,10 +799,31 @@ app.post("/api/state", requireAuth, ah(async (req, res) => {
   const oldOwnSocial = current.social?.[req.username] || defaultSocialFor();
   const newOwnSocial = finalSocial[req.username] || defaultSocialFor();
   const notify = (username, notification) => {
-    if (!username || username.toLowerCase() === req.username.toLowerCase()) return;
-    if (!finalSocial[username]) finalSocial[username] = defaultSocialFor();
-    finalSocial[username].notifications = [notification, ...(finalSocial[username].notifications || [])].slice(0, 300);
+  if (!username || username.toLowerCase() === req.username.toLowerCase()) return;
+  if (!finalSocial[username]) finalSocial[username] = defaultSocialFor();
+
+  const safeNotification = {
+    name: clampString(notification?.name, MAX_NAME_LEN),
+    avatar: clampString(notification?.avatar, 10),
+    avatarImage: typeof notification?.avatarImage === "string"
+      ? clampString(notification.avatarImage, 2000)
+      : null,
+    text: clampString(notification?.text, 300),
+    time: clampString(notification?.time, 100),
+    unread: !!notification?.unread,
+    postId: typeof notification?.postId === "number"
+      ? notification.postId
+      : null,
+    type: typeof notification?.type === "string"
+      ? clampString(notification.type, 50)
+      : null
   };
+
+  finalSocial[username].notifications = [
+    safeNotification,
+    ...(finalSocial[username].notifications || [])
+  ].slice(0, 300);
+};
   for (const [postIdStr, emoji] of Object.entries(newOwnSocial.myReactions || {})) {
     const oldEmoji = oldOwnSocial.myReactions?.[postIdStr];
     if (emoji !== oldEmoji) {
