@@ -642,14 +642,31 @@ function sanitizeOwnSocial(incoming) {
 // your post" reaches the post's owner) — never edit or remove one that's
 // already there, and never touch their albums/reposts/saves/reactions.
 function mergeOtherMemberSocial(current) {
-  // Other members' private social data is server-owned. The current client
-  // is never allowed to rewrite or append to another member's notifications.
   const base = current ? { ...current } : defaultSocialFor();
-  base.notifications = Array.isArray(base.notifications) ? base.notifications : [];
+
+  base.notifications = Array.isArray(base.notifications)
+    ? base.notifications
+        .filter(isPlainObject)
+        .slice(0, 300)
+        .map(n => ({
+          name: clampString(n.name, MAX_NAME_LEN),
+          avatar: clampString(n.avatar, 10),
+          avatarImage: typeof n.avatarImage === "string"
+            ? clampString(n.avatarImage, 2000)
+            : null,
+          text: clampString(n.text, 300),
+          time: clampString(n.time, 100),
+          unread: !!n.unread,
+          postId: typeof n.postId === "number" ? n.postId : null,
+          type: typeof n.type === "string" ? clampString(n.type, 50) : null
+        }))
+    : [];
+
   base.albums = Array.isArray(base.albums) ? base.albums : [];
   base.reposts = Array.isArray(base.reposts) ? base.reposts : [];
   base.savedPostIds = Array.isArray(base.savedPostIds) ? base.savedPostIds : [];
   base.myReactions = isPlainObject(base.myReactions) ? base.myReactions : {};
+
   return base;
 }
 
