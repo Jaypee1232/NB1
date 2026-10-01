@@ -24,9 +24,25 @@
 ========================================================= */
 
 const admin = require("firebase-admin");
-const { getFirestore } = require("firebase-admin/firestore");
+const { getFirestore, initializeFirestore } = require("firebase-admin/firestore");
 
 let db = null;
+
+// Firestore rejects `undefined` anywhere in a document. This strips it from
+// every nested object/array before ANY write, whatever code path built the data.
+function removeUndefined(value) {
+  if (Array.isArray(value)) {
+    return value.map(item => (item === undefined ? null : removeUndefined(item)));
+  }
+  if (value && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    const cleaned = {};
+    for (const [key, item] of Object.entries(value)) {
+      if (item !== undefined) cleaned[key] = removeUndefined(item);
+    }
+    return cleaned;
+  }
+  return value;
+}
 
 function init() {
   if (db) return db;
@@ -52,8 +68,16 @@ function init() {
 
   const app = admin.initializeApp({ credential });
   const databaseId = process.env.FIRESTORE_DATABASE_ID; // undefined -> the (default) database
-  db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
-  db.settings({ ignoreUndefinedProperties: true }); 
+  const settings = { ignoreUndefinedProperties: true };
+  try {
+    // Settings are applied when the instance is created (the safe way).
+    db = databaseId ? initializeFirestore(app, settings, databaseId) : initializeFirestore(app, settings);
+  } catch (err) {
+    console.warn("initializeFirestore failed, falling back to getFirestore:", err.message);
+    db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
+    try { db.settings(settings); } catch (_) { /* already initialized */ }
+  }
+  console.log("[firestore] ready (ignoreUndefinedProperties on)");
   return db;
 }
 
@@ -72,7 +96,7 @@ async function readState() {
 
 async function writeState(obj) {
   obj.rev = (Number(obj.rev) || 0) + 1; // revision counter: lets us detect out-of-date saves
-  await STATE_DOC().set(obj);
+  await STATE_DOC().set(removeUndefined(obj));
   return obj;
 }
 
@@ -97,7 +121,7 @@ async function readCredentials() {
 }
 
 async function writeCredentials(obj) {
-  await CREDENTIALS_DOC().set(obj);
+  await CREDENTIALS_DOC().set(removeUndefined(obj));
 }
 
 // Runs once, only the very first time the server ever connects to this
@@ -106,12 +130,12 @@ async function writeCredentials(obj) {
 async function ensureSeeded(defaultStateObj, seedCredentials) {
   const credSnap = await CREDENTIALS_DOC().get();
   if (!credSnap.exists) {
-    await CREDENTIALS_DOC().set(seedCredentials);
+    await CREDENTIALS_DOC().set(removeUndefined(seedCredentials));
     console.log(`[seed] Created Firestore "nbh/credentials" with ${Object.keys(seedCredentials).length} accounts.`);
   }
   const stateSnap = await STATE_DOC().get();
   if (!stateSnap.exists) {
-    await STATE_DOC().set({ ...defaultStateObj, rev: 0 });
+    await STATE_DOC().set(removeUndefined({ ...defaultStateObj, rev: 0 }));
     console.log('[seed] Created Firestore "nbh/state".');
   }
 }
